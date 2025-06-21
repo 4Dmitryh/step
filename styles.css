@@ -1,0 +1,616 @@
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #1a1a1a;
+    background: linear-gradient(135deg, #f0f9ff 0%, #f0fdfa 100%);
+    min-height: 100vh;
+}
+
+/* Container */
+.container {
+    max-width: 448px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* Views */
+.view {
+    display: none;
+    min-height: 100vh;
+}
+
+.view.active {
+    display: block;
+}
+
+/* Header */
+.header {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.brand-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    background: linear-gradient(135deg, #2563eb 0%, #0d9488 100%);
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.brand-text h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.brand-text p {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.campus-badge {
+    background: #dcfce7;
+    color: #166534;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.btn-back {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    color: #6b7280;
+    margin-right: 0.75rem;
+}
+
+.btn-back:hover {
+    background: #f3f4f6;
+}
+
+.nav-header-info h1 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.nav-header-info p {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.nav-stats {
+    text-align: right;
+}
+
+.nav-stats div {
+    font-size: 0.875rem;
+    color: #111827;
+    font-weight: 500;
+}
+
+.time-estimate {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: #6b7280 !important;
+    font-size: 0.75rem !important;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 0.5rem;
+    background: #e5e7eb;
+    border-radius: 0.25rem;
+    margin-top: 0.75rem;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #2563eb 0%, #0d9488 100%);
+    transition: width 0.3s ease;
+    width: 25%;
+}
+
+/* Cards */
+.card {
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.welcome-card {
+    background: linear-gradient(135deg, #2563eb 0%, #0d9488 100%);
+    color: white;
+}
+
+.card-header {
+    padding: 1.5rem 1.5rem 0;
+}
+
+.card-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.card-header h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #2563eb;
+}
+
+.card-header p {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+.card-content {
+    padding: 1.5rem;
+}
+
+.welcome-card .card-content {
+    padding-top: 0;
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #2563eb 0%, #0d9488 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-outline {
+    background: white;
+    border: 1px solid #d1d5db;
+    color: #374151;
+}
+
+.btn-outline:hover {
+    background: #f9fafb;
+}
+
+.btn-full {
+    width: 100%;
+}
+
+.btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+}
+
+.welcome-card .btn-primary {
+    background: white;
+    color: #2563eb;
+}
+
+.welcome-card .btn-primary:hover {
+    background: #f0f9ff;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card svg {
+    color: #2563eb;
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+/* Quick Actions */
+.card-content .btn {
+    margin-bottom: 0.75rem;
+}
+
+.card-content .btn:last-child {
+    margin-bottom: 0;
+}
+
+/* Section */
+.section {
+    margin-bottom: 2rem;
+}
+
+.section h2 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 1rem;
+}
+
+/* Landmarks */
+.landmarks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.landmark-card {
+    background: white;
+    border-radius: 0.75rem;
+    display: flex;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+}
+
+.landmark-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.landmark-card img {
+    width: 5rem;
+    height: 5rem;
+    object-fit: cover;
+}
+
+.landmark-info {
+    flex: 1;
+    padding: 1rem;
+}
+
+.landmark-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.landmark-header h3 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.landmark-location {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+/* Badges */
+.badge {
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-green {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.badge-blue {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.badge-purple {
+    background: #f3e8ff;
+    color: #7c3aed;
+}
+
+.badge-orange {
+    background: #fed7aa;
+    color: #ea580c;
+}
+
+/* Form Elements */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.input-wrapper svg {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+}
+
+.input-wrapper input {
+    width: 100%;
+    padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    background: white;
+}
+
+.input-wrapper input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Popular Routes */
+.popular-route {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background: #f9fafb;
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.popular-route:last-child {
+    margin-bottom: 0;
+}
+
+.route-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #111827;
+    margin-bottom: 0.25rem;
+}
+
+.route-stats {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.route-stats span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* Navigation View Specific */
+.navigation-card {
+    margin-bottom: 1.5rem;
+}
+
+.step-image-container {
+    position: relative;
+}
+
+.step-image-container img {
+    width: 100%;
+    height: 16rem;
+    object-fit: cover;
+}
+
+.step-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    color: #111827;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.navigation-card .card-content h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.5rem;
+}
+
+.navigation-card .card-content p {
+    color: #6b7280;
+    margin-bottom: 1rem;
+}
+
+.navigation-controls {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.navigation-controls .btn {
+    flex: 1;
+}
+
+/* Route Steps Overview */
+.route-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.route-step {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.step-circle {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+    flex-shrink: 0;
+}
+
+.step-circle.completed {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.step-circle.current {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.step-circle.pending {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.step-info {
+    flex: 1;
+}
+
+.step-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.step-title.completed {
+    color: #166534;
+}
+
+.step-title.current {
+    color: #1e40af;
+}
+
+.step-title.pending {
+    color: #6b7280;
+}
+
+.current-badge {
+    background: white;
+    border: 1px solid #d1d5db;
+    color: #6b7280;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 0.75rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .navigation-controls {
+        flex-direction: column;
+    }
+    
+    .popular-route {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.view.active {
+    animation: fadeIn 0.3s ease-out;
+}
