@@ -1,3 +1,4 @@
+
 // Navigation state
 let currentStep = 0;
 let completedSteps = [];
@@ -36,32 +37,11 @@ const routeData = {
     distance: "120 meters"
 };
 
-// Utility Functions
-function getDistanceFromLatLon(lat1, lon1, lat2, lon2) {
-    const R = 6371e3;
-    const φ1 = lat1 * Math.PI / 180;
-    const φ2 = lat2 * Math.PI / 180;
-    const Δφ = (lat2 - lat1) * Math.PI / 180;
-    const Δλ = (lon2 - lon1) * Math.PI / 180;
-
-    const a = Math.sin(Δφ / 2) ** 2 +
-              Math.cos(φ1) * Math.cos(φ2) *
-              Math.sin(Δλ / 2) ** 2;
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return R * c;
-}
-
-function stopCamera() {
-    if (videoStream) {
-        videoStream.getTracks().forEach(track => track.stop());
-        videoStream = null;
-    }
-}
-
-// View Handling
+// View management
 function showView(viewId) {
-    document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(view => {
+        view.classList.remove('active');
+    });
     document.getElementById(viewId).classList.add('active');
 }
 
@@ -77,21 +57,30 @@ function showRouteView() {
 function showNavigationView() {
     const fromInput = document.getElementById('from-input').value;
     const toInput = document.getElementById('to-input').value;
-
+    
     if (fromInput && toInput) {
+        // Update route summary
         document.getElementById('route-summary').textContent = `${fromInput} → ${toInput}`;
+        
         showView('navigation-view');
         initializeNavigation();
     }
 }
 
+// Route planning functionality
 function updateRouteButton() {
     const fromInput = document.getElementById('from-input').value;
     const toInput = document.getElementById('to-input').value;
     const generateBtn = document.getElementById('generate-route-btn');
-    generateBtn.disabled = !(fromInput.trim() && toInput.trim());
+    
+    if (fromInput.trim() && toInput.trim()) {
+        generateBtn.disabled = false;
+    } else {
+        generateBtn.disabled = true;
+    }
 }
 
+// Navigation functionality
 function initializeNavigation() {
     currentStep = 0;
     completedSteps = [];
@@ -111,36 +100,62 @@ function updateNavigationView() {
     const step = routeData.steps[currentStep];
     const totalSteps = routeData.steps.length;
     const isLast = currentStep === totalSteps - 1;
-
+    
+    // Update step counter and progress
     document.getElementById('step-counter').textContent = `Step ${currentStep + 1}/${totalSteps}`;
-    document.getElementById('progress-fill').style.width = `${((currentStep + 1) / totalSteps) * 100}%`;
+    const progressPercentage = ((currentStep + 1) / totalSteps) * 100;
+    document.getElementById('progress-fill').style.width = `${progressPercentage}%`;
+    
+    // Update current step content
     document.getElementById('step-image').src = step.image;
     document.getElementById('step-image').alt = step.instruction;
     document.getElementById('step-number').textContent = currentStep + 1;
     document.getElementById('step-instruction').textContent = step.instruction;
     document.getElementById('step-description').textContent = step.description;
-
+    
+    // Update navigation buttons
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
-    prevBtn.style.display = currentStep > 0 ? 'block' : 'none';
-
+    
+    if (currentStep > 0) {
+        prevBtn.style.display = 'block';
+    } else {
+        prevBtn.style.display = 'none';
+    }
+    
     if (isLast) {
-        nextBtn.innerHTML = `Arrived! <svg width="16" height="16"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>`;
+        nextBtn.innerHTML = `
+            Arrived!
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22,4 12,14.01 9,11.01"/>
+            </svg>
+        `;
         nextBtn.onclick = () => {
             alert('Congratulations! You have arrived at your destination.');
             showHomeView();
         };
     } else {
         const isCompleted = completedSteps.includes(currentStep);
-        nextBtn.innerHTML = `${isCompleted ? 'Continue' : 'I see this landmark'} <svg width="16" height="16"><path d="m9 18 6-6-6-6"/></svg>`;
+        nextBtn.innerHTML = `
+            ${isCompleted ? 'Continue' : 'I see this landmark'}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m9 18 6-6-6-6"/>
+            </svg>
+        `;
         nextBtn.onclick = nextStep;
     }
+    
     renderRouteSteps();
 }
 
 function nextStep() {
-    if (currentStep < routeData.steps.length - 1) {
-        if (!completedSteps.includes(currentStep)) completedSteps.push(currentStep);
+    const totalSteps = routeData.steps.length;
+    
+    if (currentStep < totalSteps - 1) {
+        if (!completedSteps.includes(currentStep)) {
+            completedSteps.push(currentStep);
+        }
         currentStep++;
         updateNavigationView();
     }
@@ -149,37 +164,108 @@ function nextStep() {
 function previousStep() {
     if (currentStep > 0) {
         currentStep--;
+        // Remove from completed steps if going back
         completedSteps = completedSteps.filter(step => step !== currentStep);
         updateNavigationView();
     }
 }
 
 function renderRouteSteps() {
-    const container = document.getElementById('route-steps');
-    container.innerHTML = '';
+    const routeStepsContainer = document.getElementById('route-steps');
+    routeStepsContainer.innerHTML = '';
+    
     routeData.steps.forEach((step, index) => {
         const isCompleted = completedSteps.includes(index);
         const isCurrent = index === currentStep;
-        const stepClass = isCompleted ? 'completed' : isCurrent ? 'current' : 'pending';
-        const icon = isCompleted ? '<svg width="16" height="16"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>' : index + 1;
-
-        const stepEl = document.createElement('div');
-        stepEl.className = 'route-step';
-        stepEl.innerHTML = `
-            <div class="step-circle ${stepClass}">${icon}</div>
+        
+        let stepClass = 'pending';
+        let titleClass = 'pending';
+        let circleContent = index + 1;
+        
+        if (isCompleted) {
+            stepClass = 'completed';
+            titleClass = 'completed';
+            circleContent = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22,4 12,14.01 9,11.01"/>
+            </svg>`;
+        } else if (isCurrent) {
+            stepClass = 'current';
+            titleClass = 'current';
+        }
+        
+        const stepElement = document.createElement('div');
+        stepElement.className = 'route-step';
+        stepElement.innerHTML = `
+            <div class="step-circle ${stepClass}">
+                ${typeof circleContent === 'string' ? circleContent : index + 1}
+            </div>
             <div class="step-info">
-                <div class="step-title ${stepClass}">${step.instruction}</div>
+                <div class="step-title ${titleClass}">${step.instruction}</div>
             </div>
             ${isCurrent ? '<div class="current-badge">Current</div>' : ''}
         `;
-        container.appendChild(stepEl);
+        
+        routeStepsContainer.appendChild(stepElement);
     });
 }
 
-// Camera and Landmark Capture
+// Initialize the app
+document.addEventListener('DOMContentLoaded', function() {
+    // Show home view by default
+    showView('home-view');
+    
+    // Add event listeners for popular route buttons
+    document.querySelectorAll('.popular-route .btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const routeElement = this.closest('.popular-route');
+            const routeName = routeElement.querySelector('.route-name').textContent;
+            const [from, to] = routeName.split(' → ');
+            
+            document.getElementById('from-input').value = from;
+            document.getElementById('to-input').value = to;
+            updateRouteButton();
+        });
+    });
+});
+
+// Request camera access and open camera stream
+function requestCameraAccess() {
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+            const videoElement = document.createElement("video");
+            videoElement.srcObject = stream;
+            videoElement.autoplay = true;
+            videoElement.playsInline = true;
+            videoElement.style.width = "100%";
+            videoElement.style.borderRadius = "0.75rem";
+            videoElement.style.marginTop = "1rem";
+
+            const container = document.createElement("div");
+            container.className = "card";
+            container.innerHTML = `
+                <div class="card-header"><h3>Take a Picture</h3></div>
+                <div class="card-content"></div>
+            `;
+            container.querySelector(".card-content").appendChild(videoElement);
+            document.querySelector(".container").appendChild(container);
+        })
+        .catch(error => {
+            alert("Camera access denied or unavailable.");
+            console.error(error);
+        });
+}
+
+let videoStream = null;
+
 function openCameraCapture() {
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: "environment" } } })
-    .then(stream => {
+    navigator.mediaDevices.getUserMedia({
+        video: {
+            facingMode: { exact: "environment" }  // Explicitly ask for back camera
+        }
+    }).then(stream => {
+        // Create video preview
         const video = document.createElement("video");
         video.srcObject = stream;
         video.autoplay = true;
@@ -191,6 +277,22 @@ function openCameraCapture() {
         const canvas = document.createElement("canvas");
         canvas.style.display = "none";
 
+        // Back Button
+        const backBtn = document.createElement("button");
+        backBtn.className = "btn-back";
+        backBtn.style.marginBottom = "1rem";
+        backBtn.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m15 18-6-6 6-6"/>
+            </svg> Back
+        `;
+        backBtn.onclick = () => {
+            stream.getTracks().forEach(track => track.stop()); // stop camera
+            container.remove(); // remove card
+        };
+        
+
+        // Capture Button
         const captureBtn = document.createElement("button");
         captureBtn.className = "btn btn-primary btn-full";
         captureBtn.textContent = "📸 Take a picture of your current location";
@@ -204,9 +306,14 @@ function openCameraCapture() {
             const imgData = canvas.toDataURL("image/png");
             stream.getTracks().forEach(track => track.stop());
 
+            // Geolocation
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(pos => {
-                    const dist = getDistanceFromLatLon(pos.coords.latitude, pos.coords.longitude, 5.1035, -1.2818);
+                    const userLat = pos.coords.latitude;
+                    const userLon = pos.coords.longitude;
+                    const destLat = 5.1035;  // Replace with real target coordinates
+                    const destLon = -1.2818;
+                    const dist = getDistanceFromLatLon(userLat, userLon, destLat, destLon);
                     alert(`✅ Captured!\n📍 Approx. ${dist.toFixed(1)} meters from Admin Office.`);
                     video.style.display = "none";
                     const img = document.createElement("img");
@@ -220,59 +327,82 @@ function openCameraCapture() {
             }
         };
 
-        const container = document.createElement("div");
-        container.className = "card";
-        container.innerHTML = `
-            <div class="card-header">
-                <button class="btn-back" id="back-btn">
-                    <svg width="16" height="16"><path d="m15 18-6-6 6-6"/></svg> Back
-                </button>
-                <h3 style="margin-top: 0.5rem;">Report New Landmark</h3>
-            </div>
-            <div class="card-content"></div>
-        `;
+        // Create container
+const container = document.createElement("div");
+container.className = "card";
 
-        const content = container.querySelector(".card-content");
-        content.appendChild(video);
-        content.appendChild(canvas);
-        content.appendChild(captureBtn);
-        document.querySelector(".container").appendChild(container);
+// Add back button directly to the top
+container.innerHTML = `
+  <div class="card-header">
+    <button class="btn-back" id="back-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="m15 18-6-6 6-6"/>
+      </svg> Back
+    </button>
+    <h3 style="margin-top: 0.5rem;">Report New Landmark</h3>
+  </div>
+  <div class="card-content"></div>
+`;
 
-        document.getElementById("back-btn").onclick = () => {
-            stream.getTracks().forEach(track => track.stop());
-            container.remove();
-        };
+// Attach content
+const content = container.querySelector(".card-content");
+content.appendChild(video);
+content.appendChild(canvas);
+content.appendChild(captureBtn);
 
+// Attach to DOM
+document.querySelector(".container").appendChild(container);
     }).catch(err => {
-        console.warn("Back camera not available. Falling back.", err);
+        // If back camera not available, fallback to any camera
+        console.warn("Back camera not available, falling back to default. Error:", err);
         fallbackToDefaultCamera();
     });
 }
 
+// Fallback for devices where "exact: environment" fails
 function fallbackToDefaultCamera() {
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-    .then(openCameraCaptureFromStream)
-    .catch(err => {
+    navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment" }  // best effort
+    }).then(stream => {
+        // Retry using general environment-facing camera
+        openCameraCaptureFromStream(stream);
+    }).catch(err => {
         alert("🚫 Could not access any camera.");
         console.error(err);
     });
 }
 
+// Optional: extractable method for reuse
 function openCameraCaptureFromStream(stream) {
-    // You can refactor and reuse the openCameraCapture logic with this stream if needed
+    // Implement the exact same UI layout as above using this `stream`
+    // You can refactor the main body to avoid code duplication
 }
 
-// Init
-window.addEventListener("DOMContentLoaded", () => {
-    showView('home-view');
-    document.querySelectorAll('.popular-route .btn').forEach(btn => {
-        btn.addEventListener('click', e => {
-            e.preventDefault();
-            const route = btn.closest('.popular-route');
-            const [from, to] = route.querySelector('.route-name').textContent.split(' → ');
-            document.getElementById('from-input').value = from;
-            document.getElementById('to-input').value = to;
-            updateRouteButton();
-        });
-    });
-});
+
+
+// Calculate distance between two lat/lon points in meters
+function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
+    const R = 6371e3; // Radius of Earth in meters
+    const φ1 = lat1 * Math.PI / 180;
+    const φ2 = lat2 * Math.PI / 180;
+    const Δφ = (lat2 - lat1) * Math.PI / 180;
+    const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+    const a = Math.sin(Δφ/2)**2 +
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ/2)**2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+    return R * c;
+}
+
+
+
+function stopCamera() {
+    if (videoStream) {
+        videoStream.getTracks().forEach(track => track.stop());
+        videoStream = null;
+    }
+}
+
+
