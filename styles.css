@@ -616,19 +616,34 @@ body {
 }
 
 .btn-back {
-    background: none;
-    border: none;
-    padding: 0.5rem;
-    border-radius: 0.375rem;
-    cursor: pointer;
-    color: #2563eb;
-    font-size: 0.875rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: none;
+  border: none;
+  color: #2563eb;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  width: fit-content;
+  transition: background 0.2s;
+  margin-bottom: 1rem;
+}
+
+.btn-back svg {
+  stroke-width: 2;
 }
 
 .btn-back:hover {
-    background: #f3f4f6;
+  background-color: #f3f4f6;
 }
+
+@media (max-width: 480px) {
+  .btn-back {
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+  }
+}
+
