@@ -257,6 +257,7 @@ function requestCameraAccess() {
         });
 }
 
+
 let videoStream = null;
 
 function openCameraCapture() {
@@ -380,6 +381,7 @@ function openCameraCaptureFromStream(stream) {
 
 
 
+
 // Calculate distance between two lat/lon points in meters
 function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
     const R = 6371e3; // Radius of Earth in meters
@@ -398,11 +400,11 @@ function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
 
 
 
+
 function stopCamera() {
     if (videoStream) {
         videoStream.getTracks().forEach(track => track.stop());
         videoStream = null;
     }
 }
-
 
