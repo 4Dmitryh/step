@@ -260,37 +260,113 @@ function requestCameraAccess() {
 
 let videoStream = null;
 
-
-function requestCameraAccess() {
+function openCameraCapture() {
     navigator.mediaDevices.getUserMedia({
   video: {
     facingMode: { exact: "environment" } // Try to get back camera
   }
 })
 
-    .then(stream => {
-        const videoElement = document.createElement("video");
-        videoElement.srcObject = stream;
-        videoElement.autoplay = true;
-        videoElement.playsInline = true;
-        videoElement.style.width = "100%";
-        videoElement.style.borderRadius = "0.75rem";
-        videoElement.style.marginTop = "1rem";
+.then(stream => {
+        // Create video preview
+        const video = document.createElement("video");
+        video.srcObject = stream;
+        video.autoplay = true;
+        video.playsInline = true;
+        video.style.width = "100%";
+        video.style.borderRadius = "0.75rem";
+        video.style.marginTop = "1rem";
 
+        const canvas = document.createElement("canvas");
+        canvas.style.display = "none";
+
+        // Back Button
+        const backBtn = document.createElement("button");
+        backBtn.className = "btn-back";
+        backBtn.style.marginBottom = "1rem";
+        backBtn.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m15 18-6-6 6-6"/>
+            </svg> Back
+        `;
+        backBtn.onclick = () => {
+            stream.getTracks().forEach(track => track.stop()); // stop camera
+            container.remove(); // remove card
+        };
+
+        // Capture Button
+        const captureBtn = document.createElement("button");
+        captureBtn.className = "btn btn-primary btn-full";
+        captureBtn.textContent = "📸 Take a picture of your current location";
+        captureBtn.style.marginTop = "1rem";
+
+        captureBtn.onclick = () => {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(video, 0, 0);
+            const imgData = canvas.toDataURL("image/png");
+            stream.getTracks().forEach(track => track.stop());
+
+            // Geolocation
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(pos => {
+                    const userLat = pos.coords.latitude;
+                    const userLon = pos.coords.longitude;
+                    const destLat = 5.1035;
+                    const destLon = -1.2818;
+                    const dist = getDistanceFromLatLon(userLat, userLon, destLat, destLon);
+                    alert(`✅ Captured!\n📍 Approx. ${dist.toFixed(1)} meters from Admin Office.`);
+                    video.style.display = "none";
+                    const img = document.createElement("img");
+                    img.src = imgData;
+                    img.style.width = "100%";
+                    img.style.borderRadius = "0.75rem";
+                    canvas.parentNode.appendChild(img);
+                }, err => alert("⚠️ Location error: " + err.message));
+            } else {
+                alert("📵 Geolocation not supported.");
+            }
+        };
+
+        // Create container
         const container = document.createElement("div");
         container.className = "card";
         container.innerHTML = `
-            <div class="card-header"><h3>Back Camera Preview</h3></div>
+            <div class="card-header"><h3>Report New Landmark</h3></div>
             <div class="card-content"></div>
         `;
-        container.querySelector(".card-content").appendChild(videoElement);
+        const content = container.querySelector(".card-content");
+        content.appendChild(backBtn);
+        content.appendChild(video);
+        content.appendChild(canvas);
+        content.appendChild(captureBtn);
+
         document.querySelector(".container").appendChild(container);
-    })
-    .catch(err => {
-        alert("Camera access denied or rear camera unavailable.");
+    }).catch(err => {
+        alert("🚫 Cannot access back camera.");
         console.error(err);
     });
 }
+
+
+// Calculate distance between two lat/lon points in meters
+function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
+    const R = 6371e3; // Radius of Earth in meters
+    const φ1 = lat1 * Math.PI / 180;
+    const φ2 = lat2 * Math.PI / 180;
+    const Δφ = (lat2 - lat1) * Math.PI / 180;
+    const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+    const a = Math.sin(Δφ/2)**2 +
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ/2)**2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+    return R * c;
+}
+
+
 
 
 function stopCamera() {
