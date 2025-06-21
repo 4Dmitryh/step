@@ -257,50 +257,38 @@ function requestCameraAccess() {
         });
 }
 
+
 let videoStream = null;
 
+
 function requestCameraAccess() {
-    navigator.mediaDevices.getUserMedia({ video: true })
-        .then(stream => {
-            videoStream = stream;
-            const video = document.createElement("video");
-            video.srcObject = stream;
-            video.autoplay = true;
-            video.playsInline = true;
-            video.style.width = "100%";
-            video.style.borderRadius = "0.75rem";
+    navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment" }  // Ask for rear camera
+    })
+    .then(stream => {
+        const videoElement = document.createElement("video");
+        videoElement.srcObject = stream;
+        videoElement.autoplay = true;
+        videoElement.playsInline = true;
+        videoElement.style.width = "100%";
+        videoElement.style.borderRadius = "0.75rem";
+        videoElement.style.marginTop = "1rem";
 
-            const canvas = document.createElement("canvas");
-            canvas.style.display = "none";
-
-            const captureButton = document.createElement("button");
-            captureButton.textContent = "📸 Take Picture";
-            captureButton.className = "btn btn-primary btn-full";
-            captureButton.onclick = () => {
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                canvas.getContext("2d").drawImage(video, 0, 0);
-                const imageDataUrl = canvas.toDataURL("image/png");
-                alert("Image captured and location estimated!");
-                stopCamera(); // stop video after capture
-            };
-
-            const container = document.createElement("div");
-            container.className = "card";
-            container.innerHTML = `
-                <div class="card-header"><h3>Capture Landmark & Estimate Distance</h3></div>
-                <div class="card-content"></div>
-            `;
-            container.querySelector(".card-content").appendChild(video);
-            container.querySelector(".card-content").appendChild(canvas);
-            container.querySelector(".card-content").appendChild(captureButton);
-            document.querySelector(".container").appendChild(container);
-        })
-        .catch(error => {
-            alert("Camera access denied or unavailable.");
-            console.error(error);
-        });
+        const container = document.createElement("div");
+        container.className = "card";
+        container.innerHTML = `
+            <div class="card-header"><h3>Back Camera Preview</h3></div>
+            <div class="card-content"></div>
+        `;
+        container.querySelector(".card-content").appendChild(videoElement);
+        document.querySelector(".container").appendChild(container);
+    })
+    .catch(err => {
+        alert("Camera access denied or rear camera unavailable.");
+        console.error(err);
+    });
 }
+
 
 function stopCamera() {
     if (videoStream) {
@@ -308,3 +296,4 @@ function stopCamera() {
         videoStream = null;
     }
 }
+
