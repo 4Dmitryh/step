@@ -262,9 +262,7 @@ let videoStream = null;
 
 function openCameraCapture() {
     navigator.mediaDevices.getUserMedia({
-        video: {
-            facingMode: { exact: "environment" }  // Explicitly ask for back camera
-        }
+        video: { facingMode: { ideal: "environment" } }
     }).then(stream => {
         // Create video preview
         const video = document.createElement("video");
@@ -291,7 +289,6 @@ function openCameraCapture() {
             stream.getTracks().forEach(track => track.stop()); // stop camera
             container.remove(); // remove card
         };
-        
 
         // Capture Button
         const captureBtn = document.createElement("button");
@@ -312,7 +309,7 @@ function openCameraCapture() {
                 navigator.geolocation.getCurrentPosition(pos => {
                     const userLat = pos.coords.latitude;
                     const userLon = pos.coords.longitude;
-                    const destLat = 5.1035;  // Replace with real target coordinates
+                    const destLat = 5.1035;
                     const destLon = -1.2818;
                     const dist = getDistanceFromLatLon(userLat, userLon, destLat, destLon);
                     alert(`✅ Captured!\n📍 Approx. ${dist.toFixed(1)} meters from Admin Office.`);
@@ -329,56 +326,24 @@ function openCameraCapture() {
         };
 
         // Create container
-const container = document.createElement("div");
-container.className = "card";
+        const container = document.createElement("div");
+        container.className = "card";
+        container.innerHTML = `
+            <div class="card-header"><h3>Report New Landmark</h3></div>
+            <div class="card-content"></div>
+        `;
+        const content = container.querySelector(".card-content");
+        content.appendChild(backBtn);
+        content.appendChild(video);
+        content.appendChild(canvas);
+        content.appendChild(captureBtn);
 
-// Add back button directly to the top
-container.innerHTML = `
-  <div class="card-header">
-    <button class="btn-back" id="back-btn">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="m15 18-6-6 6-6"/>
-      </svg> Back
-    </button>
-    <h3 style="margin-top: 0.5rem;">Report New Landmark</h3>
-  </div>
-  <div class="card-content"></div>
-`;
-
-// Attach content
-const content = container.querySelector(".card-content");
-content.appendChild(video);
-content.appendChild(canvas);
-content.appendChild(captureBtn);
-
-// Attach to DOM
-document.querySelector(".container").appendChild(container);
+        document.querySelector(".container").appendChild(container);
     }).catch(err => {
-        // If back camera not available, fallback to any camera
-        console.warn("Back camera not available, falling back to default. Error:", err);
-        fallbackToDefaultCamera();
-    });
-}
-
-// Fallback for devices where "exact: environment" fails
-function fallbackToDefaultCamera() {
-    navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" }  // best effort
-    }).then(stream => {
-        // Retry using general environment-facing camera
-        openCameraCaptureFromStream(stream);
-    }).catch(err => {
-        alert("🚫 Could not access any camera.");
+        alert("🚫 Cannot access back camera.");
         console.error(err);
     });
 }
-
-// Optional: extractable method for reuse
-function openCameraCaptureFromStream(stream) {
-    // Implement the exact same UI layout as above using this `stream`
-    // You can refactor the main body to avoid code duplication
-}
-
 
 
 
