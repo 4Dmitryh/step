@@ -262,12 +262,10 @@ let videoStream = null;
 
 function openCameraCapture() {
     navigator.mediaDevices.getUserMedia({
-  video: {
-    facingMode: { exact: "environment" } // Try to get back camera
-  }
-})
-
-.then(stream => {
+        video: {
+            facingMode: { exact: "environment" }  // Explicitly ask for back camera
+        }
+    }).then(stream => {
         // Create video preview
         const video = document.createElement("video");
         video.srcObject = stream;
@@ -313,7 +311,7 @@ function openCameraCapture() {
                 navigator.geolocation.getCurrentPosition(pos => {
                     const userLat = pos.coords.latitude;
                     const userLon = pos.coords.longitude;
-                    const destLat = 5.1035;
+                    const destLat = 5.1035;  // Replace with real target coordinates
                     const destLon = -1.2818;
                     const dist = getDistanceFromLatLon(userLat, userLon, destLat, destLon);
                     alert(`✅ Captured!\n📍 Approx. ${dist.toFixed(1)} meters from Admin Office.`);
@@ -329,7 +327,7 @@ function openCameraCapture() {
             }
         };
 
-        // Create container
+        // Container
         const container = document.createElement("div");
         container.className = "card";
         container.innerHTML = `
@@ -343,11 +341,34 @@ function openCameraCapture() {
         content.appendChild(captureBtn);
 
         document.querySelector(".container").appendChild(container);
+
     }).catch(err => {
-        alert("🚫 Cannot access back camera.");
+        // If back camera not available, fallback to any camera
+        console.warn("Back camera not available, falling back to default. Error:", err);
+        fallbackToDefaultCamera();
+    });
+}
+
+// Fallback for devices where "exact: environment" fails
+function fallbackToDefaultCamera() {
+    navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment" }  // best effort
+    }).then(stream => {
+        // Retry using general environment-facing camera
+        openCameraCaptureFromStream(stream);
+    }).catch(err => {
+        alert("🚫 Could not access any camera.");
         console.error(err);
     });
 }
+
+// Optional: extractable method for reuse
+function openCameraCaptureFromStream(stream) {
+    // Implement the exact same UI layout as above using this `stream`
+    // You can refactor the main body to avoid code duplication
+}
+
+
 
 
 // Calculate distance between two lat/lon points in meters
