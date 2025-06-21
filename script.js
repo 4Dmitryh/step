@@ -263,8 +263,11 @@ let videoStream = null;
 
 function requestCameraAccess() {
     navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" }  // Ask for rear camera
-    })
+  video: {
+    facingMode: { exact: "environment" } // Try to get back camera
+  }
+})
+
     .then(stream => {
         const videoElement = document.createElement("video");
         videoElement.srcObject = stream;
